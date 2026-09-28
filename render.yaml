@@ -11,6 +11,6 @@ services:
       - key: OPEN_ACCESS
         value: "true"   # no login screen; every visitor acts as admin
       - key: ADMIN_PASSWORD
-        sync: false   # Render asks for this on first deploy
+        generateValue: true   # unused while OPEN_ACCESS is on
       - key: CORS_ORIGINS
-        sync: false   # e.g. https://<your-github-username>.github.io
+        value: https://riyan-hx.github.io
