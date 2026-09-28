@@ -11,7 +11,7 @@ import bcrypt
 from sqlalchemy.orm import Session
 
 from db.session import get_db
-from db.models import User
+from db.models import Role, User
 
 log = logging.getLogger("xai_soc.security")
 
@@ -34,7 +34,13 @@ else:
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 8
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+# OPEN_ACCESS=true drops the login: requests without a token act as the
+# seeded admin. Only for demos -- anyone who can reach the API gets full access.
+OPEN_ACCESS = os.getenv("OPEN_ACCESS", "").strip().lower() in {"1", "true", "yes"}
+if OPEN_ACCESS:
+    log.warning("OPEN_ACCESS is on: unauthenticated requests are treated as the admin user.")
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=False)
 
 
 def hash_password(password: str) -> str:
@@ -52,12 +58,22 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
+def get_current_user(token: Optional[str] = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    if not token:
+        if OPEN_ACCESS:
+            admin = (
+                db.query(User)
+                .filter(User.role == Role.ADMIN, User.is_active.is_(True))
+                .first()
+            )
+            if admin:
+                return admin
+        raise credentials_exception
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = payload.get("sub")

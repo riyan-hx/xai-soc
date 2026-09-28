@@ -24,7 +24,7 @@ import { AttackAvatar, SeverityPill } from "./Badges";
 // filtered locally; alert matches come from the API as you type.
 export default function CommandPalette({ onClose, onShortcuts }) {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout, openAccess } = useAuth();
   const { toggle: toggleTheme, theme } = useTheme();
   const [query, setQuery] = useState("");
   const [alerts, setAlerts] = useState([]);
@@ -52,18 +52,22 @@ export default function CommandPalette({ onClose, onShortcuts }) {
         run: toggleTheme,
       },
       { id: "a-keys", group: "Actions", label: "Show keyboard shortcuts", Icon: Keyboard, run: onShortcuts },
-      {
-        id: "a-out",
-        group: "Actions",
-        label: "Sign out",
-        Icon: LogOut,
-        run: () => {
-          logout();
-          navigate("/login");
-        },
-      },
+      ...(openAccess
+        ? []
+        : [
+            {
+              id: "a-out",
+              group: "Actions",
+              label: "Sign out",
+              Icon: LogOut,
+              run: () => {
+                logout();
+                navigate("/login");
+              },
+            },
+          ]),
     ];
-  }, [navigate, user, theme, toggleTheme, onShortcuts, logout]);
+  }, [navigate, user, theme, toggleTheme, onShortcuts, logout, openAccess]);
 
   const q = query.trim().toLowerCase();
   const filteredCommands = q ? commands.filter((c) => c.label.toLowerCase().includes(q)) : commands;

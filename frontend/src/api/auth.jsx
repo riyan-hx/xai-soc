@@ -7,20 +7,24 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [user, setUser] = useState(null);
   const [ready, setReady] = useState(false);
+  // true when the backend runs with OPEN_ACCESS and answers without a token
+  const [openAccess, setOpenAccess] = useState(false);
 
   useEffect(() => {
-    if (!token) {
-      setUser(null);
-      setReady(true);
-      return;
-    }
+    // with no token, still ask: an OPEN_ACCESS backend returns its admin user
     api
       .me()
-      .then(setUser)
+      .then((me) => {
+        setUser(me);
+        setOpenAccess(!token);
+      })
       .catch(() => {
-        localStorage.removeItem("token");
-        setToken(null);
+        if (token) {
+          localStorage.removeItem("token");
+          setToken(null);
+        }
         setUser(null);
+        setOpenAccess(false);
       })
       .finally(() => setReady(true));
   }, [token]);
@@ -37,8 +41,11 @@ export function AuthProvider({ children }) {
     setUser(null);
   }
 
+  // `token` stays the "signed in" signal for the rest of the app
+  const signedIn = token || (openAccess && user ? "open-access" : null);
+
   return (
-    <AuthContext.Provider value={{ token, user, ready, login, logout }}>
+    <AuthContext.Provider value={{ token: signedIn, user, ready, login, logout, openAccess }}>
       {children}
     </AuthContext.Provider>
   );

@@ -34,6 +34,20 @@ def test_alerts_require_auth():
         assert r.status_code == 401
 
 
+def test_open_access_acts_as_admin_without_token(monkeypatch):
+    from api import security
+
+    monkeypatch.setattr(security, "OPEN_ACCESS", True)
+    with TestClient(app) as client:
+        r = client.get("/api/auth/me")
+        assert r.status_code == 200
+        assert r.json()["role"] == "ADMIN"
+        assert client.get("/api/alerts").status_code == 200
+        # a bad token is still rejected, not silently upgraded
+        bad = {"Authorization": "Bearer not-a-token"}
+        assert client.get("/api/alerts", headers=bad).status_code == 401
+
+
 def test_me_returns_current_user():
     with TestClient(app) as client:
         headers = _login(client)

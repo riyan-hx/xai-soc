@@ -189,7 +189,7 @@ function SystemStatus({ online, model, findings = [] }) {
 }
 
 function UserMenu({ onShortcuts }) {
-  const { user, logout } = useAuth();
+  const { user, logout, openAccess } = useAuth();
   const navigate = useNavigate();
   const { theme, toggle: toggleTheme } = useTheme();
   const [open, setOpen] = useState(false);
@@ -225,16 +225,20 @@ function UserMenu({ onShortcuts }) {
           <button className="menu-item" onClick={toggleTheme}>
             {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />} {theme === "dark" ? "Light theme" : "Dark theme"}
           </button>
-          <div className="menu-sep" />
-          <button
-            className="menu-item"
-            onClick={() => {
-              logout();
-              navigate("/login");
-            }}
-          >
-            <LogOut size={16} /> Sign out
-          </button>
+          {!openAccess && (
+            <>
+              <div className="menu-sep" />
+              <button
+                className="menu-item"
+                onClick={() => {
+                  logout();
+                  navigate("/login");
+                }}
+              >
+                <LogOut size={16} /> Sign out
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>

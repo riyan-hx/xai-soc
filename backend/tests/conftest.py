@@ -22,6 +22,8 @@ _MODEL_PATH = os.path.join(_TEST_DIR, "model.joblib")
 os.environ["DATABASE_URL"] = f"sqlite:///{_DB_PATH}"
 os.environ["JWT_SECRET"] = "test-secret"
 os.environ["MODEL_PATH"] = _MODEL_PATH
+# a local .env may turn the login off; tests exercise the real auth path
+os.environ["OPEN_ACCESS"] = ""
 
 _BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _ML_TRAINING_DIR = os.path.abspath(os.path.join(_BACKEND_DIR, "..", "ml_training"))
