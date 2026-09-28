@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-22T00:00:00Z",
+  "title": "Design System: SOC Console",
+  "extensions": {
+    "colorMeta": {
+      "ember": {
+        "role": "primary",
+        "displayName": "Ember",
+        "canonical": "#ff7646",
+        "tonalRamp": ["#5c1f0a", "#8a3010", "#b93c0a", "#e0521d", "#ff7646", "#ff9b78", "#ffc4ae", "#fff0ea"]
+      },
+      "ground": {
+        "role": "neutral",
+        "displayName": "Ground",
+        "canonical": "#f6f6f7",
+        "tonalRamp": ["#18181c", "#4f5158", "#6b6e76", "#9a9ca3", "#dcdee3", "#ececef", "#f6f7f9", "#ffffff"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Page titles." },
+      "title": { "displayName": "Title", "purpose": "Card headings." },
+      "body": { "displayName": "Body", "purpose": "Prose and table cells." },
+      "label": { "displayName": "Label", "purpose": "Column heads, captions, chips." },
+      "figure": { "displayName": "Figure", "purpose": "Every measured value, in Geist Mono with tabular numerals." }
+    },
+    "shadows": [
+      { "name": "card", "value": "0 1px 2px rgba(20, 20, 28, 0.04)", "purpose": "Barely-there lift on cards; removed in dark theme." },
+      { "name": "pop", "value": "0 12px 32px -8px rgba(20, 20, 28, 0.18), 0 2px 6px rgba(20, 20, 28, 0.06)", "purpose": "Popovers, command palette, toasts." },
+      { "name": "brand-glow", "value": "0 4px 10px rgba(255, 118, 70, 0.35)", "purpose": "The brand mark only." }
+    ],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "State transitions, 120 to 260ms. Layout properties are never animated." }
+    ],
+    "breakpoints": [
+      { "name": "rail-collapse", "value": "1360px" },
+      { "name": "nav-search-compact", "value": "1240px" },
+      { "name": "detail-stack", "value": "1180px" },
+      { "name": "nav-menu", "value": "980px" },
+      { "name": "phone", "value": "520px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one main action in a region. Ink label on Ember.",
+      "html": "<button class=\"ds-btn-primary\">Simulate attack</button>",
+      "css": ".ds-btn-primary{background:#ff7646;color:#18181c;height:40px;padding:0 16px;border:1px solid transparent;border-radius:10px;font:550 13.5px 'Geist Variable',system-ui,sans-serif;transition:background .16s cubic-bezier(.22,1,.36,1)}.ds-btn-primary:hover{background:#ff6a35}.ds-btn-primary:focus-visible{outline:2px solid #ff7646;outline-offset:2px}.ds-btn-primary:active{transform:translateY(1px)}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Supporting actions next to a primary.",
+      "html": "<button class=\"ds-btn-secondary\">Export CSV</button>",
+      "css": ".ds-btn-secondary{background:#eef0f3;color:#18181c;height:40px;padding:0 16px;border:1px solid transparent;border-radius:10px;font:550 13.5px 'Geist Variable',system-ui,sans-serif}.ds-btn-secondary:hover{background:#dcdee3}.ds-btn-secondary:focus-visible{outline:2px solid #ff7646;outline-offset:2px}"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "chip",
+      "refersTo": "segmented-track",
+      "description": "Week/Month and time-range pills.",
+      "html": "<div class=\"ds-seg\"><button aria-pressed=\"true\">7D</button><button aria-pressed=\"false\">30D</button><button aria-pressed=\"false\">90D</button></div>",
+      "css": ".ds-seg{display:inline-flex;gap:2px;padding:3px;background:#f6f7f9;border:1px solid #ececef;border-radius:10px}.ds-seg button{height:26px;padding:0 10px;border:1px solid transparent;border-radius:7px;background:transparent;color:#6b6e76;font:550 12px 'Geist Variable',system-ui,sans-serif}.ds-seg button:hover{color:#18181c}.ds-seg button[aria-pressed=true]{background:#fff;border-color:#dcdee3;color:#18181c}.ds-seg button:focus-visible{outline:2px solid #ff7646;outline-offset:2px}"
+    },
+    {
+      "name": "KPI Card",
+      "kind": "card",
+      "refersTo": "kpi-card",
+      "description": "Title, subtitle, mono value, and a change chip against last week.",
+      "html": "<div class=\"ds-kpi\"><div class=\"ds-kpi-t\">New alerts</div><div class=\"ds-kpi-s\">Detections · 7 days</div><div class=\"ds-kpi-v\">167</div><div class=\"ds-kpi-f\">vs last week <span class=\"ds-delta\">+23.7%</span></div></div>",
+      "css": ".ds-kpi{background:#fff;border:1px solid #ececef;border-radius:14px;padding:16px 18px;width:240px;font-family:'Geist Variable',system-ui,sans-serif;color:#18181c}.ds-kpi-t{font-size:14px;font-weight:600}.ds-kpi-s{font-size:11.5px;color:#6b6e76}.ds-kpi-v{font:500 28px 'Geist Mono Variable',ui-monospace,monospace;letter-spacing:-.02em;margin:16px 0 12px}.ds-kpi-f{display:flex;justify-content:space-between;font-size:12px;color:#6b6e76}.ds-delta{font:500 11.5px 'Geist Mono Variable',ui-monospace,monospace;background:#fdecec;color:#b42328;padding:2px 6px;border-radius:6px}"
+    },
+    {
+      "name": "Severity Pill",
+      "kind": "chip",
+      "refersTo": "severity-pill",
+      "description": "Tinted pill with a dot and the severity word; colour is never the only signal.",
+      "html": "<span class=\"ds-sev\"><i></i>Critical</span>",
+      "css": ".ds-sev{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;background:#fdecec;color:#b42328;font:600 11.5px 'Geist Variable',system-ui,sans-serif}.ds-sev i{width:6px;height:6px;border-radius:50%;background:currentColor}"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Fully round input; focus shows an Ember border and soft ring.",
+      "html": "<input class=\"ds-input\" placeholder=\"Filter by IP…\" />",
+      "css": ".ds-input{height:40px;width:260px;padding:0 14px;border:1px solid #dcdee3;border-radius:999px;background:#fff;color:#18181c;font:400 14px 'Geist Variable',system-ui,sans-serif}.ds-input::placeholder{color:#6b6e76}.ds-input:hover{border-color:#6b6e76}.ds-input:focus{outline:none;border-color:#ff7646;box-shadow:0 0 0 3px #fff0ea}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Instrument Panel",
+    "overview": "A security console is used mid-task, for hours, by someone deciding whether to trust a machine. The system behaves like a well-made instrument: a quiet neutral ground, white cards with hairline edges, one warm accent spent on action and on the data line, and figures set in a monospaced face so columns of numbers read as measurements. It is modelled on the pinned reference dashboard and translated to alert triage. Depth is tonal; nothing glows except the brand mark and the chart line. The dark theme is the same token set re-pointed.",
+    "keyCharacteristics": [
+      "Top navigation; content on a neutral ground; a 340px right rail on the dashboard.",
+      "One accent (Ember) for primary actions, active state, brand mark and the data line.",
+      "Every figure in Geist Mono with tabular numerals; every status has a text label.",
+      "Explanation is visible at rest: a SHAP mini-profile in every alert row, a resting crosshair on every chart.",
+      "Synthetic provenance is always labelled, never hidden."
+    ],
+    "rules": [
+      { "name": "The One Voice Rule", "body": "Ember appears on one primary action per region and on the data line.", "section": "colors" },
+      { "name": "The Label Rule", "body": "Colour never carries meaning alone; severity, status and deltas always include text or an arrow.", "section": "colors" },
+      { "name": "The Dark Ramp Rule", "body": "In dark theme, ordinal ramps are re-derived from Ember at rising lightness so their order survives.", "section": "colors" },
+      { "name": "The Measurement Rule", "body": "Anything that is a measured quantity is Geist Mono with tabular numerals; anything that is a word is Geist.", "section": "typography" },
+      { "name": "The Flat-Until-Floating Rule", "body": "Only overlays cast a real shadow.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep primary text on Ember as Ink (#18181c); if white is ever wanted, use a darker accent, not white on #ff7646.",
+      "Do set every measured value in Geist Mono with tabular numerals.",
+      "Do pair every status colour with its word (Critical, Confirmed, Demo data).",
+      "Do label generated data wherever it could be mistaken for live traffic: \"Synthetic data\", \"Demo data\", \"Simulated\".",
+      "Do derive dark-theme ramps from the accent at rising lightness."
+    ],
+    "donts": [
+      "Don't use a sidebar, a crimson brand colour, or neon-on-black \"cyber\" styling.",
+      "Don't add eyebrows or kickers above headings, gradient text, coloured side-stripes on cards, or hard offset shadows.",
+      "Don't use sparklines or micro-charts as decoration; every micro-visual must encode real data.",
+      "Don't animate layout properties; motion is state change only, and reduced-motion is honoured.",
+      "Don't let a table or chart widen the page; contain overflow inside its card."
+    ]
+  }
+}

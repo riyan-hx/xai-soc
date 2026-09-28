@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: xai_soc
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/xai_soc
+      JWT_SECRET: change-me-to-a-long-random-string
+      MODEL_PATH: /app/model.joblib
+      # INGEST_API_KEY: change-me      # uncomment to require X-API-Key on /api/ingest
+      # CORS_ORIGINS: http://localhost:5173
+    volumes:
+      - ./ml_training/model.joblib:/app/model.joblib:ro
+      - ./ml_training/model_metrics.json:/app/model_metrics.json:ro
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+
+volumes:
+  db_data:

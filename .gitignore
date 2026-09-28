@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.db
+
+# Node
+node_modules/
+dist/
+
+# ML artifacts
+ml_training/model.joblib
+ml_training/model_metrics.json
+ml_training/data/processed/*.csv
+
+# Env
+.env

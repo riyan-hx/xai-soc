@@ -1,0 +1,141 @@
+/*
+  Design tokens. Neutral light ground, one orange accent, tinted (never solid)
+  status colours that always travel with a text label. The dark theme is the
+  same token set re-pointed, so no component ever hard-codes a colour.
+*/
+
+:root {
+  color-scheme: light;
+
+  --bg: #f6f6f7;
+  --surface: #ffffff;
+  --surface-2: #f6f7f9;
+  --surface-3: #eef0f3;
+  --line: #ececef;
+  --line-strong: #dcdee3;
+
+  --ink: #18181c;
+  --ink-2: #4f5158;
+  --ink-3: #6b6e76;
+
+  --accent: #ff7646;
+  --accent-hover: #ff6a35;
+  --accent-soft: #fff0ea;
+  --accent-hatch: #ffe4d9;
+  --accent-2: #ffad90;
+  --accent-3: #ffd6c7;
+  --accent-ink: #b93c0a;
+  --on-accent: #18181c;
+
+  --pos: #0e7a53;
+  --pos-bg: #e6f6ee;
+  --neg: #b42328;
+  --neg-bg: #fdecec;
+  --warn: #8a5300;
+  --warn-bg: #fff3dc;
+  --info: #1f4fb8;
+  --info-bg: #e8f0ff;
+
+  --sev-critical: #e5484d;
+  --sev-critical-ink: #b42328;
+  --sev-critical-bg: #fdecec;
+  --sev-high: #f08a1c;
+  --sev-high-ink: #8f4d00;
+  --sev-high-bg: #fff1de;
+  --sev-medium: #d4a20a;
+  --sev-medium-ink: #6f5600;
+  --sev-medium-bg: #fff8d6;
+  --sev-low: #3b82f6;
+  --sev-low-ink: #1f4fb8;
+  --sev-low-bg: #e8f0ff;
+
+  --atk-dns: #7a5af8;
+  --atk-dos: #d92d20;
+  --atk-scan: #0e9384;
+  --atk-brute: #b54708;
+  --atk-botnet: #1570ef;
+  --atk-normal: #667085;
+
+  --heat-1: #ffe1d6;
+  --heat-2: #ffb595;
+  --heat-3: #ff7646;
+  --heat-4: #b93c0a;
+
+  --tooltip-bg: #18181c;
+  --tooltip-ink: #ffffff;
+
+  --shadow-card: 0 1px 2px rgba(20, 20, 28, 0.04);
+  --shadow-pop: 0 12px 32px -8px rgba(20, 20, 28, 0.18), 0 2px 6px rgba(20, 20, 28, 0.06);
+  --shadow-glow: 0 4px 10px rgba(255, 118, 70, 0.35);
+
+  --font-ui: "Geist Variable", "Geist", -apple-system, "Segoe UI", system-ui, sans-serif;
+  --font-num: "Geist Mono Variable", "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --r-card: 14px;
+  --r-ctl: 10px;
+  --r-sm: 8px;
+  --r-pill: 999px;
+
+  --topbar-h: 72px;
+  --page-max: 1480px;
+  --page-pad: 28px;
+  --rail-w: 340px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0d0d0f;
+  --surface: #151518;
+  --surface-2: #1b1b20;
+  --surface-3: #232329;
+  --line: #26262c;
+  --line-strong: #363640;
+
+  --ink: #f4f4f5;
+  --ink-2: #b6b8bf;
+  --ink-3: #8f929b;
+
+  --accent-soft: rgba(255, 118, 70, 0.14);
+  --accent-hatch: rgba(255, 118, 70, 0.16);
+  --accent-2: #d2653d;
+  --accent-3: #8c472f;
+  --accent-ink: #ff9b78;
+
+  --pos: #4cc9a0;
+  --pos-bg: rgba(76, 201, 160, 0.14);
+  --neg: #ff8a8e;
+  --neg-bg: rgba(255, 123, 128, 0.14);
+  --warn: #f5b64a;
+  --warn-bg: rgba(245, 182, 74, 0.14);
+  --info: #8db4ff;
+  --info-bg: rgba(90, 140, 255, 0.16);
+
+  --sev-critical-ink: #ff8a8e;
+  --sev-critical-bg: rgba(255, 123, 128, 0.14);
+  --sev-high-ink: #ffb066;
+  --sev-high-bg: rgba(240, 138, 28, 0.16);
+  --sev-medium-ink: #ecc94b;
+  --sev-medium-bg: rgba(212, 162, 10, 0.16);
+  --sev-low-ink: #8db4ff;
+  --sev-low-bg: rgba(90, 140, 255, 0.16);
+
+  --atk-dns: #9b85ff;
+  --atk-dos: #f0604f;
+  --atk-scan: #2bb5a4;
+  --atk-brute: #e0803a;
+  --atk-botnet: #4d94ff;
+
+  --heat-1: #4a2b21;
+  --heat-2: #8a4a34;
+  --heat-3: #c85a35;
+  --heat-4: #ff8a5c;
+
+  --tooltip-bg: #2b2b33;
+  --tooltip-ink: #f4f4f5;
+
+  --shadow-card: none;
+  --shadow-pop: 0 16px 40px -8px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4);
+}
