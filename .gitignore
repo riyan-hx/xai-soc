@@ -15,3 +15,6 @@ ml_training/data/processed/*.csv
 
 # Env
 .env
+
+# Raw datasets (too large for git)
+datasets/
