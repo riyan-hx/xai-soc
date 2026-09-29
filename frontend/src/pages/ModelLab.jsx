@@ -247,14 +247,14 @@ export default function ModelLab() {
         <div className="card-head">
           <div>
             <h2 className="card-title" id="glos-h">What each measurement means</h2>
-            <div className="card-sub">The 17 flow features the model sees. None of them read packet contents.</div>
+            <div className="card-sub">The {m.features.length} flow features the model sees: the 77 CICFlowMeter features plus 4 DNS/port features. None of them read packet contents.</div>
           </div>
         </div>
         <div className="card-body">
           <dl className="glossary">
             {m.features.map((f) => (
               <div key={f}>
-                <dt className="num">{f}</dt>
+                <dt className="num">{humanFeature(f)}</dt>
                 <dd>{FEATURE_GLOSSARY[f]}</dd>
               </div>
             ))}

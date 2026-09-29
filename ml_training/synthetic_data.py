@@ -5,14 +5,13 @@ dataset (PRD §3/§8 -- e.g. CIC-IDS2017/2018 + CIRA-CIC-DoHBrw-2020) is wired
 in. Replace `build_dataset()` with a real CSV loader once the dataset is
 chosen; keep the column names identical to FEATURE_NAMES + "label".
 
-Each class is generated from a shared base flow profile with per-feature
-mean multipliers loosely modeled on how each attack type is described in
-IDS literature (e.g. DoS floods packet/byte rate and SYNs; port scans fan
-out across destination ports with tiny packets; DNS tunneling inflates
-query length/entropy/frequency while leaving packet volume close to
-normal). This keeps classes realistically overlapping rather than
-trivially separable, and keeps SHAP explanations pointing at the features
-that actually make sense for that attack (see PRD §9).
+Flows come from `backend/ml/profiles.py`: a few traits per flow (duration,
+packet counts, sizes, flags, idle time, DNS behaviour) are sampled around
+each class's profile, and the 77 CICFlowMeter features plus the 4 DNS/port
+features are derived from them, so related features stay consistent (Flow
+Bytes/s really is bytes over duration). Classes overlap realistically
+rather than being trivially separable, and SHAP explanations point at the
+features that actually make sense for each attack (see PRD §9).
 """
 
 import sys
@@ -29,17 +28,13 @@ RNG = np.random.default_rng(42)
 
 # Profiles live in the backend so the Threat Simulator and the counterfactual
 # explainer share exactly what the model was trained on.
-from ml.profiles import BASE_STATS, CLASS_MULTIPLIERS, REL_STD  # noqa: E402,F401
+from ml.profiles import sample_flows  # noqa: E402
 
 
 def build_dataset(n_per_class: int = 800) -> pd.DataFrame:
     rows = []
     for attack_type in ATTACK_TYPES:
-        multipliers = CLASS_MULTIPLIERS[attack_type]
-        means = np.array([BASE_STATS[f] * multipliers.get(f, 1.0) for f in FEATURE_NAMES])
-        stds = means * REL_STD + 1e-6
-        data = RNG.normal(loc=means, scale=stds, size=(n_per_class, len(FEATURE_NAMES)))
-        data = np.clip(data, 0, None)
+        data = sample_flows(attack_type, n_per_class, RNG)
         df = pd.DataFrame(data, columns=FEATURE_NAMES)
         df["label"] = attack_type
         rows.append(df)

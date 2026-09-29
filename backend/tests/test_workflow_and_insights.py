@@ -3,6 +3,8 @@
 from fastapi.testclient import TestClient
 
 from api.main import app
+from ml.features import FEATURE_NAMES
+from ml.profiles import BASE_STATS
 
 
 def _login(client, email="admin@xai-soc.local", password="changeme"):
@@ -35,7 +37,7 @@ def test_new_alert_defaults_to_new_status_and_carries_top_features(dos_features)
         assert alert["origin"] == "ingest"
         detail = client.get(f"/api/alerts/{alert['id']}", headers=headers).json()
         assert detail["timestamp"].endswith("Z")
-        assert detail["features"]["flow_packets_per_sec"] > 0
+        assert detail["features"]["flow_packets_s"] > 0
         assert detail["techniques"] and detail["techniques"][0]["url"].startswith("https://attack.mitre.org/")
         assert len(detail["playbook"]["steps"]) >= 3
         listed = client.get(f"/api/alerts?q={alert['source_ip']}", headers=headers).json()["items"]
@@ -102,19 +104,17 @@ def test_whatif_rescoring_changes_with_edited_features(dos_features):
         assert same["baseline"]["label"] == same["scenario"]["label"] == alert["attack_type"]
         assert same["changed"] == []
 
-        calm = {
-            "flow_packets_per_sec": 6.0,
-            "flow_bytes_per_sec": 2200.0,
-            "total_fwd_packets": 12.0,
-            "total_fwd_bytes": 1600.0,
-            "syn_flag_count": 2.0,
-            "fwd_iat_mean": 55.0,
-            "unique_dest_ports": 3.0,
-            "dns_queries_per_session": 2.0,
-        }
+        # every measurement set to a typical normal flow
+        calm = dict(BASE_STATS)
         out = client.post(f"/api/alerts/{alert['id']}/whatif", headers=headers, json={"overrides": calm}).json()
         assert out["scenario"]["label"] == "NORMAL"
-        assert sorted(out["changed"]) == sorted(calm)
+        assert set(out["changed"]) <= set(calm)
+
+        # CICFlowMeter column names are accepted as well as internal keys
+        cic = client.post(
+            f"/api/alerts/{alert['id']}/whatif", headers=headers, json={"overrides": {"Flow Packets/s": 1.0}}
+        ).json()
+        assert cic["changed"] == ["flow_packets_s"]
         assert abs(sum(out["scenario"]["probabilities"].values()) - 1) < 1e-3
 
         bad = client.post(f"/api/alerts/{alert['id']}/whatif", headers=headers, json={"overrides": {"nope": 1}})
@@ -189,7 +189,7 @@ def test_overview_timeseries_and_model_insights(dos_features):
 
         mi = client.get("/api/model/insights", headers=headers).json()
         assert mi["dataset"]["synthetic"] is True
-        assert len(mi["importance"]) == 17
+        assert len(mi["importance"]) == len(FEATURE_NAMES)
         assert set(mi["calibration"]).issuperset({"buckets", "verdicts", "seeded_share"})
         assert mi["observed_attribution"]["sample_size"] >= 1
 

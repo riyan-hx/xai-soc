@@ -50,22 +50,4 @@ export function riskColor(score) {
 
 // Plain-language meaning of each model input, so a SHAP bar can be read
 // without knowing the feature name.
-export const FEATURE_GLOSSARY = {
-  flow_duration: "How long the connection lasted (seconds).",
-  total_fwd_packets: "Packets sent from the client to the server.",
-  total_bwd_packets: "Packets sent back from the server.",
-  total_fwd_bytes: "Bytes sent from the client to the server.",
-  total_bwd_bytes: "Bytes sent back from the server.",
-  packet_length_mean: "Average packet size. Scans use tiny packets; bulk transfers use large ones.",
-  packet_length_std: "How much packet sizes vary.",
-  flow_bytes_per_sec: "Data rate of the flow. Floods and exfiltration push this up.",
-  flow_packets_per_sec: "Packet rate of the flow. Floods spike this.",
-  fwd_iat_mean: "Average gap between outgoing packets (ms). Floods have near-zero gaps; beacons have steady ones.",
-  bwd_iat_mean: "Average gap between returning packets (ms).",
-  syn_flag_count: "TCP SYN (connection request) packets. Scans and floods send many.",
-  ack_flag_count: "TCP ACK packets. Completed connections have many; half-open scans have few.",
-  unique_dest_ports: "Distinct destination ports touched. A port scan fans out across many.",
-  dns_query_length_mean: "Average length of DNS names queried. Tunnels stuff data into long names.",
-  dns_query_entropy: "How random the DNS names look. Generated names score high.",
-  dns_queries_per_session: "DNS lookups in the session. Tunnels and botnets query far more than normal hosts.",
-};
+export { FEATURE_GLOSSARY } from "./features";

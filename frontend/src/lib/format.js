@@ -1,3 +1,5 @@
+import { featureInfo } from "./features";
+
 // The API sends UTC ISO strings ending in "Z". Older rows (or anything
 // without a zone) are treated as UTC too, so a timestamp never silently shifts
 // by the viewer's offset.
@@ -70,8 +72,11 @@ export function fmtValue(n) {
 
 const ACRONYMS = { dns: "DNS", syn: "SYN", ack: "ACK", iat: "IAT" };
 
-// dns_query_length_mean -> "DNS query length mean"
+// flow_bytes_s -> "Flow Bytes/s" (the CICFlowMeter column name); anything
+// unknown falls back to spacing out the key
 export function humanFeature(name) {
+  const known = featureInfo(name);
+  if (known) return known.label;
   const text = name
     .split("_")
     .map((w) => ACRONYMS[w] ?? w)

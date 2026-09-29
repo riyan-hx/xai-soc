@@ -153,7 +153,11 @@ def test_alerts_search_matches_description(dos_features):
         )
         alert = r.json()
 
-        r = client.get("/api/alerts?q=flow_packets_per_sec", headers=headers)
+        # the description names the top SHAP drivers
+        from ml.features import FEATURE_LABELS
+
+        top = FEATURE_LABELS[alert["top_features"][0]["feature"]]
+        r = client.get("/api/alerts", params={"q": top}, headers=headers)
         assert r.status_code == 200
         assert any(a["id"] == alert["id"] for a in r.json()["items"])
 

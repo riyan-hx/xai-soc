@@ -29,11 +29,11 @@ const SWEEP_LEVELS = [1.4, 1.2, 1.0, 0.8, 0.6, 0.45, 0.3];
 // Measurement multipliers the generator applies at 1.00x intensity (mirrors
 // backend/ml/profiles.py), shown so the console teaches before anything is sent.
 const SIGNATURE = {
-  DNS_TUNNELING: [["dns_query_length_mean", 3.2], ["dns_queries_per_session", 4.5], ["dns_query_entropy", 1.8], ["flow_duration", 1.6]],
-  DOS_DDOS: [["flow_packets_per_sec", 9], ["total_fwd_packets", 8], ["flow_bytes_per_sec", 7], ["syn_flag_count", 5], ["fwd_iat_mean", 0.15]],
-  PORT_SCAN: [["unique_dest_ports", 8], ["syn_flag_count", 4], ["packet_length_mean", 0.35], ["flow_duration", 0.3]],
-  BRUTE_FORCE: [["total_fwd_packets", 3], ["ack_flag_count", 3], ["fwd_iat_mean", 0.6], ["flow_duration", 0.5]],
-  BOTNET: [["flow_duration", 2.2], ["dns_queries_per_session", 2.5], ["dns_query_entropy", 1.6], ["fwd_iat_mean", 1.4]],
+  DNS_TUNNELING: [["dns_queries_per_session", 4.5], ["dns_query_length_mean", 3.2], ["total_length_of_fwd_packets", 2.7], ["dns_query_entropy", 1.8], ["flow_duration", 1.6]],
+  DOS_DDOS: [["fwd_packets_s", 8.9], ["syn_flag_count", 5], ["init_win_bytes_forward", 0.1], ["fwd_iat_mean", 0.1], ["down_up_ratio", 0.06]],
+  PORT_SCAN: [["rst_flag_count", 12], ["unique_dest_ports", 8], ["syn_flag_count", 4], ["flow_duration", 0.02], ["total_length_of_fwd_packets", 0.01]],
+  BRUTE_FORCE: [["fwd_packets_s", 6], ["ack_flag_count", 3], ["fin_flag_count", 2], ["flow_duration", 0.5], ["fwd_iat_mean", 0.16]],
+  BOTNET: [["idle_mean", 3], ["dns_queries_per_session", 2.5], ["flow_duration", 2.2], ["dns_query_entropy", 1.6], ["flow_bytes_s", 0.14]],
 };
 
 function IdleGuide({ scenario, intensity }) {

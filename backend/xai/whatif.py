@@ -17,15 +17,15 @@ from typing import Dict, List, Optional
 import pandas as pd
 
 from ml.attack_analyzer import AttackAnalysis
-from ml.features import FEATURE_NAMES
-from ml.profiles import BASE_STATS
+from ml.features import FEATURE_NAMES, normalize_feature_names, to_feature_key
+from ml.profiles import BASE_STATS, complete_features
 
 # fraction of the way from the observed value to the normal-traffic value
 _STEPS = (0.25, 0.5, 0.75, 1.0)
 
 
 def _row(pipeline, features: Dict[str, float]) -> pd.DataFrame:
-    complete = {name: float(features.get(name, BASE_STATS[name])) for name in FEATURE_NAMES}
+    complete = complete_features(normalize_feature_names(features))
     return pipeline.preprocessor.preprocess_features_only(complete, pipeline.model.scaler)
 
 
@@ -60,10 +60,12 @@ def find_counterfactual(
     normal-traffic value in quarter steps and kept at the smallest step that
     helps; the search stops as soon as the model's verdict flips.
     """
-    base = {name: float(features.get(name, BASE_STATS[name])) for name in FEATURE_NAMES}
+    base = complete_features(normalize_feature_names(features))
     baseline = score_features(pipeline, base)
     ranking = shap_ranking or baseline["shap"]
     ordered = [r["feature"] for r in sorted(ranking, key=lambda r: abs(r["shap_value"]), reverse=True)]
+    # rankings stored under the old 17-feature names still point at the right feature
+    ordered = [k for k in map(to_feature_key, ordered) if k is not None]
     ordered += [n for n in FEATURE_NAMES if n not in ordered]
 
     if not baseline["is_attack"]:

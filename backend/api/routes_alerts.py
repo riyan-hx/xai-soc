@@ -18,6 +18,8 @@ from db.models import (
     MLModel,
     User,
 )
+from ml.features import normalize_feature_names, to_feature_key
+from ml.profiles import complete_features
 from xai.whatif import find_counterfactual, score_features
 from .persist import persist_alert
 from .schemas import (
@@ -360,16 +362,17 @@ def what_if(
     if not alert.analysis or not alert.analysis.features:
         raise HTTPException(status_code=409, detail="This alert has no stored feature vector")
     pipeline = request.app.state.pipeline
-    original = {k: float(v) for k, v in alert.analysis.features.items()}
-    unknown = [k for k in payload.overrides if k not in original]
+    original = complete_features(normalize_feature_names(alert.analysis.features))
+    unknown = [k for k in payload.overrides if to_feature_key(k) is None]
     if unknown:
         raise HTTPException(status_code=422, detail=f"Unknown features: {unknown}")
-    edited = {**original, **{k: max(0.0, float(v)) for k, v in payload.overrides.items()}}
+    overrides = {to_feature_key(k): max(0.0, float(v)) for k, v in payload.overrides.items()}
+    edited = {**original, **overrides}
     return {
         "baseline": score_features(pipeline, original, with_shap=False),
         "scenario": score_features(pipeline, edited),
         "features": edited,
-        "changed": sorted(k for k in payload.overrides if abs(edited[k] - original[k]) > 1e-9),
+        "changed": sorted(k for k in overrides if abs(edited[k] - original[k]) > 1e-9),
     }
 
 
@@ -543,10 +546,13 @@ def ingest(payload: IngestRequest, request: Request, db: Session = Depends(get_d
     than a logged-in analyst; set `INGEST_API_KEY` to require a shared key, and
     put mTLS or a private network in front of it before exposing it further."""
     pipeline = request.app.state.pipeline
-    alert = pipeline.process(payload.features, payload.source_ip, payload.dest_ip)
+    # accepts CICFlowMeter column names or internal keys; features left out
+    # are filled with typical normal-traffic values
+    features = complete_features(normalize_feature_names(payload.features))
+    alert = pipeline.process(features, payload.source_ip, payload.dest_ip)
     if alert is None:
         return None
-    row = persist_alert(db, alert, payload.features, origin="ingest")
+    row = persist_alert(db, alert, features, origin="ingest")
     db.commit()
     db.refresh(row)
     return row

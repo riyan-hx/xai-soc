@@ -6,6 +6,7 @@ import pandas as pd
 import shap
 
 from ml.attack_analyzer import AttackAnalysis
+from ml.features import FEATURE_LABELS
 
 
 @dataclass
@@ -67,5 +68,5 @@ class ExplainableAIModule:
     @staticmethod
     def _build_reason(attack_type: str, important_features: List[dict]) -> str:
         top = important_features[:3]
-        parts = [f"{f['feature']} ({f['value']:.2f})" for f in top]
+        parts = [f"{FEATURE_LABELS.get(f['feature'], f['feature'])} ({f['value']:.2f})" for f in top]
         return f"Classified as {attack_type}: driven by " + ", ".join(parts) + "."

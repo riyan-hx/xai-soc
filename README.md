@@ -8,6 +8,13 @@ flow as normal or one of five attacks (DNS tunneling, DoS/DDoS, port scan,
 brute force, botnet), **explains every verdict with SHAP**, scores risk, and
 gives analysts a ranked queue with the reasoning attached.
 
+**Features:** the model uses the 77 flow features CICFlowMeter produces (the
+feature set of CIC-IDS2017 / CSE-CIC-IDS2018: flow duration, packet counts and
+lengths, inter-arrival times, TCP flags, header lengths, bulk/subflow stats,
+initial window sizes, active/idle times) plus 4 DNS/port features CICFlowMeter
+lacks (unique destination ports, DNS query length, entropy and rate). The list
+lives in `backend/ml/features.py`.
+
 > **Training data is synthetic** (`ml_training/synthetic_data.py`) until a real
 > dataset (CIC-IDS / CIRA-CIC-DoHBrw) is wired in. The UI says so wherever it
 > matters. Near-perfect test scores show the pipeline works, not that real
@@ -21,7 +28,7 @@ gives analysts a ranked queue with the reasoning attached.
 | **Alert queue** | Risk-ranked queue, Open/All/Closed scope, filters, saved views, campaign (grouped) view, bulk confirm / dismiss / assign, keyboard triage (`j` `k` `Enter` `x` `/`) |
 | **Alert detail** | SHAP driver bars, **what-if lab** (edit a measurement, the real model re-decides), **counterfactual finder** (smallest edit that makes it "normal"), MITRE ATT&CK techniques and response playbook, case status and assignee, audit timeline with notes |
 | **Threat Simulator** | Fires generated flows through the real pipeline (classification, SHAP, risk, alert). Intensity slider makes attacks stealthier; **Stealth sweep** plots detection and confidence against intensity without creating alerts. Admins can seed 30 days of demo history |
-| **Model Observatory** | Test metrics, global feature importance, mean SHAP across stored explanations (per attack class), per-class precision/recall, a **reliability chart** comparing model confidence with analyst verdicts, glossary of the 17 features |
+| **Model Observatory** | Test metrics, global feature importance, mean SHAP across stored explanations (per attack class), per-class precision/recall, a **reliability chart** comparing model confidence with analyst verdicts, glossary of all 81 features |
 | **Reports** | Auto-written weekly brief, distributions, top sources/targets, CSV export, print-friendly layout |
 | **Users** | Admin-only account management (users with history are deactivated, not deleted) |
 
@@ -84,10 +91,14 @@ attack and click **Explain** on a resulting alert.
 ```bash
 curl -X POST http://localhost:8000/api/ingest \
   -H "Content-Type: application/json" \
-  -d '{"features": {"flow_duration": 2.1, "total_fwd_packets": 110, "total_bwd_packets": 14, "total_fwd_bytes": 15000, "total_bwd_bytes": 1500, "packet_length_mean": 390, "packet_length_std": 65, "flow_bytes_per_sec": 16000, "flow_packets_per_sec": 44, "fwd_iat_mean": 7.5, "bwd_iat_mean": 52, "syn_flag_count": 9.5, "ack_flag_count": 3.7, "unique_dest_ports": 1.5, "dns_query_length_mean": 21, "dns_query_entropy": 2.3, "dns_queries_per_session": 0.5}, "source_ip": "10.0.0.5", "dest_ip": "10.0.0.1"}'
+  -d '{"features": {"Flow Duration": 1936852, "Total Fwd Packets": 113, "Total Backward Packets": 5.36, "Total Length of Fwd Packets": 5822, "Flow Bytes/s": 4998, "Flow Packets/s": 61.29, "Fwd Packets/s": 58.52, "Fwd IAT Mean": 16894, "Fwd IAT Std": 5363, "Fwd IAT Max": 32985, "Flow IAT Std": 5224, "SYN Flag Count": 5.64, "ACK Flag Count": 2.69, "Down/Up Ratio": 0.05, "Init_Win_bytes_forward": 927, "Packet Length Variance": 2887, "Idle Mean": 200358}, "source_ip": "10.0.0.5", "dest_ip": "10.0.0.1"}'
 ```
 
-Feature values are raw (not pre-scaled); the API applies the trained scaler.
+That is a DoS flow. Feature names can be CICFlowMeter column names (as above)
+or the internal keys (`flow_bytes_s`, `fwd_iat_mean`, ...). Features you leave
+out are filled with a typical normal flow's values. Values are raw (not
+pre-scaled; durations and IATs in microseconds, like CICFlowMeter); the API
+applies the trained scaler.
 
 ## Security notes
 
@@ -115,8 +126,9 @@ Backend on `:8000`, frontend on `:5173`, Postgres on `:5432`.
 ## Where to go next
 
 1. **Pick the real dataset** (PRD sec. 3) and replace `build_dataset()` in
-   `ml_training/synthetic_data.py` with a real CSV loader, keeping the column
-   names in `backend/ml/features.py`. The simulator's flow profiles live in
+   `ml_training/synthetic_data.py` with a real CSV loader. CICFlowMeter
+   column names map onto `backend/ml/features.py` automatically
+   (`normalize_feature_names`); only the 4 DNS/port features need a source. The simulator's flow profiles live in
    `backend/ml/profiles.py`; re-derive them from the real data.
 2. Re-run `ml_training/train.py` and check the report. Everything downstream
    (SHAP, alerts, risk, API, dashboard, Model Observatory) works against the

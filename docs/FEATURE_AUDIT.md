@@ -36,7 +36,7 @@ pipeline against the architecture diagram — see `PIPELINE_VERIFICATION.md`).
 
 ### Model Observatory
 - Test metrics, global feature importance, per-class SHAP/precision/recall,
-  reliability chart, 17-feature glossary — `frontend/src/pages/ModelLab.jsx`
+  reliability chart, 81-feature glossary — `frontend/src/pages/ModelLab.jsx`
 
 ### Reports
 - Weekly brief, distributions, top sources/targets, CSV export, print layout
@@ -62,7 +62,7 @@ pipeline against the architecture diagram — see `PIPELINE_VERIFICATION.md`).
 - RandomForest, `class_weight="balanced"`, fixed seed (42), stratified split,
   macro-F1 reporting
 - SHAP TreeExplainer
-- 6 classes × 17 features — matches PRD §8–9 exactly
+- 6 classes × 81 features (77 CICFlowMeter + 4 DNS/port)
 
 ## ⚠️ Not implemented — but flagged in docs as intentional future work, not gaps
 

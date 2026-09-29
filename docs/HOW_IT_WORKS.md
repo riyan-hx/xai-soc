@@ -97,8 +97,13 @@ xai-soc/
 
 Two lists that every other module imports:
 
-- `FEATURE_NAMES` — 17 flow-level statistics (packet counts, byte rates,
-  inter-arrival times, SYN/ACK flag counts, DNS query length/entropy, etc).
+- `FEATURE_NAMES` — 81 flow-level statistics: the 77 features CICFlowMeter
+  produces (the CIC-IDS2017 / CSE-CIC-IDS2018 feature set: durations, packet
+  counts and lengths, inter-arrival times, TCP flags, header lengths,
+  bulk/subflow stats, initial window sizes, active/idle times) plus 4 it
+  lacks (unique destination ports, DNS query length/entropy/rate). Keys are
+  the CIC column names normalized (`"Flow Bytes/s"` → `flow_bytes_s`), so a
+  real CICFlowMeter CSV maps on without a rename table.
   Nothing here reads packet *payloads* — that's the point: this works on
   encrypted traffic (e.g. DNS-over-HTTPS) because it only looks at traffic
   shape, not content.
@@ -115,7 +120,7 @@ Two different code paths that matter for different reasons:
 
 - **`preprocess(df)`** — used once, at training time. Runs, in order:
   `clean()` (drop duplicates/NaNs/infs) → `extract_features()` (select the
-  17 columns) → `fit_normalize()` (fit a `MinMaxScaler`) → `balance()`
+  81 columns) → `fit_normalize()` (fit a `MinMaxScaler`) → `balance()`
   (SMOTE oversampling so rare classes aren't ignored).
 - **`preprocess_features_only(feature_dict, scaler)`** — used on every
   live request. Takes one flow's raw feature dict and scales it with the
